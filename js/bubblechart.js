@@ -3,8 +3,8 @@ function Bubblechart(canvas){
 var dataset = []
 var x = 20;
 for (var i = 0; i < 10; i++) {
-  var x = x + d3.randomUniform(40,50)();
-  var y = d3.randomUniform(30,300)();
+  var x = x + d3.randomUniform(10,70)();
+  var y = d3.randomUniform(150,450)();
   var r = d3.randomUniform(8,30)();
   dataset.push({"x": x, "y": y,"r":r});
 }
@@ -22,35 +22,35 @@ d.r = +d.r;
 
 
 var xline = svg.append('line')
-              .attr('x1',40)
-              .attr('y1',350)
-              .attr('x2',650)
-              .attr('y2',350)
-              .attr("stroke-width",2)
-              .attr("stroke","white");
+              .attr('x1',10)
+              .attr('y1',470)
+              .attr('x2',600)
+              .attr('y2',470)
+              .attr("stroke-width",1)
+             .attr("stroke","white");
 
 var xlines = svg.append('line')
-              .attr('x1',40)
-              .attr('y1',2)
-              .attr('x2',650)
-              .attr('y2',2)
-              .attr("stroke-width",2)
+              .attr('x1',10)
+              .attr('y1',120)
+              .attr('x2',600)
+              .attr('y2',120)
+              .attr("stroke-width",1)
               .attr("stroke","white");
 
 var yline = svg.append('line')
-                .attr('x1',40)
-                .attr('y1',2)
-                .attr('x2',40)
-                .attr('y2',350)
-                .attr("stroke-width",2)
+                .attr('x1',10)
+                .attr('y1',120)
+                .attr('x2',10)
+                .attr('y2',470)
+                .attr("stroke-width",1)
                 .attr("stroke","white");
 
 var ylines = svg.append('line')
-                .attr('x1',650)
-                .attr('y1',2)
-                .attr('x2',650)
-                .attr('y2',350)
-                .attr("stroke-width",2)
+                .attr('x1',600)
+                .attr('y1',120)
+                .attr('x2',600)
+                .attr('y2',470)
+                .attr("stroke-width",1)
                 .attr("stroke","white");
 
 // add the bubbles
@@ -64,7 +64,7 @@ svg.selectAll("bubble")
   .attr("fill","white");
 
 
-//random center
+// random center
 var pt1=Math.floor(Math.random()*10);
 var pt2=Math.floor(Math.random()*10);
 while(pt1==pt2){
