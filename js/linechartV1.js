@@ -1,4 +1,3 @@
-
 function linechart(canvas){
   //lineAreaChart random data generation
     var jsonRandom=[];
@@ -12,8 +11,6 @@ function linechart(canvas){
     }
   //compute max
     max=Math.max(one,two,three);
-
-
 
   //draw 
     canvas.append('rect')
@@ -72,13 +69,16 @@ function linechart(canvas){
     }
 
     //draw points
-    var circles=canvas.selectAll("circle")
+   svg.selectAll("circle")
        .data(points)
        .enter()
        .append("circle")
-       .attr("cx",xScale(1))
+       .attr("cx",xScale(1.4))
        .attr("cy",function(d){return (yScale(jsonRandom[d].two) + yScale(jsonRandom[d+1].two))/2})
-       .attr("r",4);
+       .attr("r",4)
+       .style("fill","black");
+
+        console.log(points)
 
 //compute areas
     p10=jsonRandom[pt1];
