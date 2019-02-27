@@ -17,8 +17,8 @@
     
     <style type="text/css">
       .canvas cricle {
-        fill: #FFFFFF;
-        stroke: #FFFFFF;
+        fill:black;
+        stroke:black;
      
       }
       .canvas text{
@@ -27,18 +27,21 @@
       .canvas line{
         fill: none;
         stroke: #000;
-        stroke-width: 3;
+        stroke-width: 2;
       }
       .arc{
           stroke:#000;
-          fill:white;
+          fill:black;
           stroke-width:1px;
+          position:absolute;
+            left:900px;
+            top:70px;
         }
       .circle{
           fill:#000;
         }
         .arc path {
-            stroke: #fff;
+            stroke:black;
         }
         .chartArea {
             text-align: center;
@@ -128,9 +131,9 @@
     
     </body>
     
-    <script src="./js/Piechart.js"></script>
-    <script src="./js/bubblechart.js"></script>
-    <script src="./js/linechartV1.js"></script>
+    <script src="Piechart.js"></script>
+    <script src="bubblechart.js"></script>
+    <script src="linechartV1.js"></script>
     
     <script>
       //background color
@@ -144,15 +147,16 @@
       // var y = d3.scaleLinear().range([height, 0]);
       // var xAxis = d3.axisBottom(x);
       // var yAxis = d3.axisLeft(y);
+  
       //trackdata
-    //  var numVis1 = 30;
-    //  var numVis2 = 30;
+     var numVis1 = 30;
+     var numVis2 = 30;
     //  var numVis3 = 30;
     //  var numVis4 = 30;
-    //  var visType; //current vis type being displayed
-    //  var trialNum = 1; //current trial number during experiment
-    //  var truePercent = 10; //true percent of current vis
-    //  var trialData = [];
+      var visType; //current vis type being displayed
+      var trialNum = 1; //current trial number during experiment
+      var truePercent = 10; //true percent of current vis
+      var trialData = [];
       
       //generate 10 random numbers between 1 and 100, choose 2 to show dots
       //var data = getData();
@@ -166,9 +170,96 @@
                         
         var ratio=linechart(canvas);
         console.log(ratio);
-      //  document.getElementById("trialNum").innerHTML = trialNum;
-      //  document.getElementById("totalTrials").innerHTML = 120;
       
-      linechart(canvas);
+        document.getElementById("trialNum").innerHTML = trialNum;
+        document.getElementById("totalTrials").innerHTML = 120;
+      
+   //   Bubblechart(canvas);
+  //    Piechart(canvas);
+
+    //checkInputValid  
+  function checkValid(){
+      var num = document.getElementById("report_percent").value;
+      if(isNaN(num) || num < 0 || num > 1){
+          document.getElementById("msg").innerHTML = "Invalid Input";
+          alert("Invalid Input!")
+      }
+      else{
+          document.getElementById("msg").innerHTML = "";
+          nextTrial();
+      }
+  }
+  function nextTrial(){
+      appendTrialData();
+      if(numVis1 == 0 && numVis2 == 0 ){
+          saveToFirebase();
+          alert("All Done! Thank You!")
+      }
+      else{
+  //         //clear the svg
+          svg.selectAll("*").remove();
+  //         //update progress
+          document.getElementById("trialNum").innerHTML = trialNum;
+          var displayed = false;
+          while(!displayed){
+              var next = Math.floor(Math.random() * 4);
+              if(next == 0 && numVis1 > 0){
+                  Bubblechart(canvas);
+                  displayed = true;
+              }
+              else if(next == 1 && numVis2 > 0){
+                  Piechart(canvas);
+                  displayed = true;
+              }
+              // else if(next == 2 && numVis3 > 0){
+              //     displayHorizontalBarChart(data);
+              //     displayed = true;
+              // }
+              // else if(next == 3 && numVis4 > 0){
+              //     displayUDBarChart(data);
+              //     displayed = true;
+             // }
+          }
+      }
+  }
+  function appendTrialData(){
+      var report_percent = document.getElementById("report_percent").value;
+      var row = trialNum.toString() + "," + visType + "," +
+          truePercent.toString() + "," + report_percent.toString();
+      trialData.push(row);
+      console.log(trialData);
+      document.getElementById("report_percent").value = "";
+  }
+  function truePercentCalculation(num1, num2){
+      if(num1 < num2){
+          return (num1 / num2 * 100).toFixed(2);
+      }
+      else{
+          return (num2 / num1 * 100).toFixed(2);
+      }
+  }
+  // function getData(){
+  //     var data = [];
+  //     for(i = 0; i < 10; i++){
+  //         var num = Math.floor(Math.random() * 100) + 1;
+  //         data.push(num);
+  //     }
+  //     return data;
+  // }
+  function saveToFirebase() {
+      var ref = firebase.database().ref();
+      var rootRef = ref.child('/');
+      trialData.forEach(function (row) {
+          var newRef = rootRef.push();
+          var elts = row.split(",");
+          console.log(elts);
+          newRef.set({
+              "trialNum": elts[0],
+              "visType": elts[1],
+              "truePercent": elts[2],
+              "reportPercent": elts[3]
+          });
+      });
+  }
       
     </script>
