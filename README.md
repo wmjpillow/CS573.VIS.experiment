@@ -4,6 +4,9 @@ Meijie Wang, Yuting Han, Zhiyi Huang
 -------
 
 
+Demo:
+https://wmjpillow.github.io/CS573.VIS.experiment/
+
 Mirrow link for assignment: 
 https://yutinghan.github.io/03-Experiment
 
