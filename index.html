@@ -1,31 +1,17 @@
 <head>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
-    <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyCYKKh_KrbM67-Fs4UPqj0minBUJvmbZdA",
-        authDomain: "cs573experiment.firebaseapp.com",
-        databaseURL: "https://cs573experiment.firebaseio.com",
-        projectId: "cs573experiment",
-        storageBucket: "cs573experiment.appspot.com",
-        messagingSenderId: "296762835128"
-      };
-      firebase.initializeApp(config);
-    </script>
-    
+
     <style type="text/css">
       .canvas cricle {
         fill:black;
         stroke:black;
-     
+
       }
       .canvas text{
         fill:#FFFFFF;
       }
       .canvas line{
-        fill: none;
+        fill: #000;
         stroke: #000;
         stroke-width: 2;
       }
@@ -38,24 +24,25 @@
             top:70px;
         }
       .circle{
-          fill:#000;
+          fill:black;
+          stroke:black;
         }
-        .arc path {
+      .arc path {
             stroke:black;
         }
-        .chartArea {
+      .chartArea {
             text-align: center;
             position:absolute;
             left:900px;
             top:70px;
         }
-        .inputArea {
+      .inputArea {
             text-align: center;
             position:absolute;
             top:600px;
             left:350px;
         }
-        .title {
+      .title {
             text-align: center;
             font-family: georgia, "Times New Roman", serif;
             font-size: 32px;
@@ -68,7 +55,7 @@
             top:200px;
             left:350px;
         }
-        .description {
+      .description {
             color:lightgray;
             font-weight: normal;
             font-size: 1em;
@@ -77,7 +64,7 @@
             top:300px;
             left:150px;
         }
-        .description1 {
+      .description1 {
             color:lightgray;
             font-weight: normal;
             font-size: 1em;
@@ -86,7 +73,7 @@
             top:320px;
             left:150px;
         }
-        .description2 {
+      .description2 {
             color:lightgray;
             font-weight: normal;
             font-size: 1em;
@@ -95,13 +82,23 @@
             top:340px;
             left:150px;
         }
-        .description3 {
+      .description3 {
             color:lightgray;
             font-weight: normal;
             font-size: 1em;
             font-family: "ff-tisa-web-pro-1","ff-tisa-web-pro-2", "Goudy Old Style", Baskerville, Constantia, Georgia, serif;
             position:absolute;
-            top:400px;
+            top:360px;
+            left:150px;
+        }
+
+      .description4 {
+            color:lightgray;
+            font-weight: normal;
+            font-size: 1em;
+            font-family: "ff-tisa-web-pro-1","ff-tisa-web-pro-2", "Goudy Old Style", Baskerville, Constantia, Georgia, serif;
+            position:absolute;
+            top:420px;
             left:150px;
         }
     </style>
@@ -109,32 +106,34 @@
     <body>
       <h1 class="title"> Experiment </h1>
       <div class = chartArea>
-          <svg id="visRegion" width="650" height="700"></svg>
+          <svg id="visRegion" width="650" height="1400"></svg>
       </div>
       <div class="inputArea">
           <input type="number" id="report_percent">
           <button  type="button" onclick="checkValid()">Next</button>
           <p id="msg"></p>
       </div>
-      <p class="description">There are two regions marked with a white dot. What percentage is the smaller of the larger?
-      </p></div>
-      <br>
-      <p class="description1">  For example, if you thought </p>
-      <br/>
+      <p class="description">There are two regions marked with a black dot. What percentage is the smaller of the larger?
+      </p><
       <div>
-      <p class="description2">   the smaller was half the size of the larger, you would put "50" in the input and click next.</p>
-    </div>
-      <p class="description3"><b>Progress:</b>
+      <p class="description1">  For example, if you thought </p>
+      <div/>
+      <p class="description2">   the smaller was half the size of the larger, you would put "0.5" in the input and click next.</p></div>
+      <div>
+      <p class="description3"> the input only allowed among the range(0,1)</p>
+      </div>
+
+      <p class="description4"><b>Progress:</b>
           <a id="trialNum"></a> /
           <a id="totalTrials"></a>
       </p>
-    
+
     </body>
-    
-    <script src="Piechart.js"></script>
-    <script src="bubblechart.js"></script>
-    <script src="linechartV1.js"></script>
-    
+
+    <script src="./js/Piechart.js"></script>
+    <script src="./js/bubblechart.js"></script>
+    <script src="./js/linechart.js"></script>
+
     <script>
       //background color
       d3.select('body')
@@ -143,44 +142,45 @@
         var margin = {top:90, right:90, bottom:90, left:90},
             width = 650-margin.left-margin.right,
             height = 750-margin.top-margin.bottom;
-      // var x = d3.scaleLinear().range([0, width]);
-      // var y = d3.scaleLinear().range([height, 0]);
-      // var xAxis = d3.axisBottom(x);
-      // var yAxis = d3.axisLeft(y);
-  
-      //trackdata
-     var numVis1 = 30;
-     var numVis2 = 30;
-    //  var numVis3 = 30;
-    //  var numVis4 = 30;
-      var visType; //current vis type being displayed
-      var trialNum = 1; //current trial number during experiment
-      var truePercent = 10; //true percent of current vis
-      var trialData = [];
-      
-      //generate 10 random numbers between 1 and 100, choose 2 to show dots
-      //var data = getData();
-       var svg = d3.select('#visRegion').attr('align','center')
-                    .append('svg')    
+
+        var svg = d3.select('#visRegion').attr('align','center')
+                    .append('svg')
                         .attr('width',width+margin.left+margin.right)
-                        .attr('height',height+margin.top+margin.bottom);
-       var canvas=svg.append('g')
+                        .attr('height',1600+margin.top+margin.bottom);
+        var canvas=svg.append('g')
                         .attr('class','canvas')
                         .attr('transform','translate('+margin.left+','+margin.top+')');
-                        
-        var ratio=linechart(canvas);
-        console.log(ratio);
-      
-        document.getElementById("trialNum").innerHTML = trialNum;
-        document.getElementById("totalTrials").innerHTML = 120;
-      
-   //   Bubblechart(canvas);
-  //    Piechart(canvas);
 
-    //checkInputValid  
+
+      //trackdata
+     var total=60;
+     var numVis1 = total/3;
+     var numVis2 = total/3;
+     var numVis3 = total/3;
+     var visType; //current vis type being displayed
+     var trialNum = 1; //current trial number during experiment
+     var truePercent = 1; //true percent of current vis
+     var trialData = [];
+     var index_diff = 0;
+
+      //generate 10 random numbers between 1 and 100, choose 2 to show dots
+
+
+        //var ratio=linechart(canvas);
+        //console.log(ratio);
+
+        document.getElementById("trialNum").innerHTML = trialNum;
+        console.log(trialNum);
+        document.getElementById("totalTrials").innerHTML = total;
+        //initiate the first chart
+        var appendResultFlag=false;
+        firstTrial();
+
+
+    //checkInputValid
   function checkValid(){
       var num = document.getElementById("report_percent").value;
-      if(isNaN(num) || num < 0 || num > 1){
+      if(isNaN(num) || num < 0 || num > 1 || num.length==0){
           document.getElementById("msg").innerHTML = "Invalid Input";
           alert("Invalid Input!")
       }
@@ -189,77 +189,77 @@
           nextTrial();
       }
   }
-  function nextTrial(){
-      appendTrialData();
-      if(numVis1 == 0 && numVis2 == 0 ){
-          saveToFirebase();
-          alert("All Done! Thank You!")
-      }
-      else{
-  //         //clear the svg
-          svg.selectAll("*").remove();
-  //         //update progress
-          document.getElementById("trialNum").innerHTML = trialNum;
-          var displayed = false;
-          while(!displayed){
-              var next = Math.floor(Math.random() * 4);
+
+  function firstTrial(){
+    var  next= Math.floor(Math.random() * 3);
               if(next == 0 && numVis1 > 0){
                   Bubblechart(canvas);
                   displayed = true;
               }
               else if(next == 1 && numVis2 > 0){
+                  linechart(svg);
+                  displayed = true;
+              }
+              else if(next == 2 && numVis3 > 0){
                   Piechart(canvas);
                   displayed = true;
               }
-              // else if(next == 2 && numVis3 > 0){
-              //     displayHorizontalBarChart(data);
-              //     displayed = true;
-              // }
-              // else if(next == 3 && numVis4 > 0){
-              //     displayUDBarChart(data);
-              //     displayed = true;
-             // }
+
+  }
+
+  function nextTrial(){
+        appendTrialData(); 
+ 
+      
+      if(numVis1 == 0 && numVis2 == 0 && numVis3 == 0){
+          alert("All Done! Thank You!");
+          svg.selectAll("*").remove();
+          svg.selectAll("text")
+           .data(trialData).enter().append("text")
+           .attr("x",20)
+           .attr("y",function(d,i){return i*20+20})
+           .attr("fill","white")
+           //.attr("text-anchor","middle")
+           .text(function(d){return d+"\n";});
+
+      }
+      else{
+
+          svg.selectAll("*").remove();
+
+  //         //update progress
+          document.getElementById("trialNum").innerHTML = trialNum;
+          var displayed = false;
+          while(!displayed){
+              var  next= Math.floor(Math.random() * 3);
+              if(next == 0 && numVis1 > 0){
+                  Bubblechart(canvas);
+                  displayed = true;
+              }
+              else if(next == 1 && numVis2 > 0){
+                  linechart(svg);
+                  displayed = true;
+              }
+              else if(next == 2 && numVis3 > 0){
+                  Piechart(canvas);
+                  displayed = true;
+              }
+
           }
       }
+
   }
   function appendTrialData(){
       var report_percent = document.getElementById("report_percent").value;
-      var row = trialNum.toString() + "," + visType + "," +
-          truePercent.toString() + "," + report_percent.toString();
+      var row = (trialNum-1).toString() + "," + visType + "," +
+          truePercent.toString() + "," + report_percent.toString() + "," + index_diff;
       trialData.push(row);
       console.log(trialData);
       document.getElementById("report_percent").value = "";
   }
-  function truePercentCalculation(num1, num2){
-      if(num1 < num2){
-          return (num1 / num2 * 100).toFixed(2);
-      }
-      else{
-          return (num2 / num1 * 100).toFixed(2);
-      }
-  }
-  // function getData(){
-  //     var data = [];
-  //     for(i = 0; i < 10; i++){
-  //         var num = Math.floor(Math.random() * 100) + 1;
-  //         data.push(num);
-  //     }
-  //     return data;
-  // }
-  function saveToFirebase() {
-      var ref = firebase.database().ref();
-      var rootRef = ref.child('/');
-      trialData.forEach(function (row) {
-          var newRef = rootRef.push();
-          var elts = row.split(",");
-          console.log(elts);
-          newRef.set({
-              "trialNum": elts[0],
-              "visType": elts[1],
-              "truePercent": elts[2],
-              "reportPercent": elts[3]
-          });
-      });
-  }
-      
+
+ 
+
+
     </script>
+
