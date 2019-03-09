@@ -4,7 +4,7 @@ Meijie Wang, Yuting Han, Zhiyi Huang
 -------
 
 
-Survey Link: 
+Mirrow link for assignment: 
 https://yutinghan.github.io/03-Experiment
 
 A controlled experiment to test human perception of graphic area is built following the style from Cleveland and McGill's 1984 paper closely. Three competing visualizations are chosen: Stacked Area Chart, Bubble Chart and Pie Chart. In each chart, 10 randomly generated white regions are presented and 2 of them indicated by black dots are randomly chosen for area comparison.
